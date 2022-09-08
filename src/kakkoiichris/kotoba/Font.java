@@ -87,13 +87,17 @@ public class Font {
         }
     }
     
-    private int fixed(int color) {
+    private static int fixed(int color) {
         var byte0 = (color >> 24) & 0xFF;
         var byte1 = (color >> 16) & 0xFF;
         var byte2 = (color >> 8) & 0xFF;
         var byte3 = color & 0xFF;
         
         return (byte3 << 24) | (byte2 << 16) | (byte1 << 8) | byte0;
+    }
+    
+    public int getHeight() {
+        return height;
     }
     
     public CharacterInfo get(char c) {

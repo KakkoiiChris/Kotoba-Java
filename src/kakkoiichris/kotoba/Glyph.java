@@ -2,6 +2,7 @@ package kakkoiichris.kotoba;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.sin;
 
@@ -18,6 +19,13 @@ public class Glyph {
         this.c = c;
         this.effect = effect;
         this.inverted = inverted;
+    }
+    
+    public static List<Glyph> toGlyphs(String string, Effect effect, boolean inverted) {
+        return string
+            .chars()
+            .mapToObj(c -> new Glyph((char) c, effect, inverted))
+            .toList();
     }
     
     public char getChar() {
@@ -49,6 +57,14 @@ public class Glyph {
     }
     
     public interface Effect {
+        default Multi and(Effect effect) {
+            return new Multi(this, effect);
+        }
+        
+        void apply(Glyph glyph, double delta);
+        
+        Effect copy();
+        
         record Color(int rgb) implements Effect {
             public static final Color red = new Color(0xF75DB3);
             public static final Color orange = new Color(0xF9642D);
@@ -155,10 +171,10 @@ public class Glyph {
             @Override
             public void apply(Glyph glyph, double delta) {
                 if (vertical) {
-                    glyph.offsetY = (int) (amplitude * sin(frequency*phase));
+                    glyph.offsetY = (int) (amplitude * sin(frequency * phase));
                 }
                 else {
-                    glyph.offsetX = (int) (amplitude * sin(frequency*phase));
+                    glyph.offsetX = (int) (amplitude * sin(frequency * phase));
                 }
                 
                 phase += speed * delta;
@@ -199,13 +215,8 @@ public class Glyph {
                 return new Multi((Effect[]) effects.stream().map(Effect::copy).toArray());
             }
         }
-        
-        default Multi and(Effect effect) {
-            return new Multi(this, effect);
-        }
-        
-        void apply(Glyph glyph, double delta);
-        
-        Effect copy();
+    }
+    
+    record Rule(String name, Pattern regex, Effect effect, boolean invert) {
     }
 }
