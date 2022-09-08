@@ -361,7 +361,7 @@ rules:
             poll();
             
             if (timer >= frameRate) {
-                System.out.println("$updates U, $frames F");
+                System.out.printf("%d U, %d F%n", updates, frames);
                 
                 updates = 0;
                 frames = 0;
@@ -516,7 +516,7 @@ rules:
                 ox += width + xSpace;
             }
             
-            if ((input.isEmpty() || (0 <= inputIndex && inputIndex < input.size())) && cursorVisible) {
+            if ((input.isEmpty() || (inputIndex < 0 || input.size() <= inputIndex)) && cursorVisible) {
                 var info = font.get(' ');
                 
                 var width = info.width();

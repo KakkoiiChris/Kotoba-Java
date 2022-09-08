@@ -166,7 +166,7 @@ public class Console {
         return Optional.of(buffer.read());
     }
     
-    public Optional<String> readText() {
+    public Optional<String> readLine() {
         if (closed) {
             return Optional.empty();
         }
@@ -243,11 +243,11 @@ public class Console {
     
     public static class Config {
         private String title = "Kotoba - Dynamic RGB ASCII Console";
-        private Image icon = ImageIO.read(Objects.requireNonNull(Config.class.getResourceAsStream("/img/icon.png")));
+        private Image icon;
         private int width = 800;
         private int height = 600;
-        private int foreground = Color.black.getRGB();
-        private int background = Color.white.getRGB();
+        private int foreground = Glyph.Effect.Color.white.rgb();
+        private int background = Glyph.Effect.Color.black.rgb();
         private Font font = new Font("/font/Fixedsys16.bff");
         private int xSpace = 0;
         private int ySpace = 0;
@@ -259,7 +259,13 @@ public class Console {
         private double cursorSpeed = 0.5;
         private String inputDelimiter = " ";
         
-        public Config() throws IOException {
+        public Config() {
+            try {
+                icon = ImageIO.read(Objects.requireNonNull(Config.class.getResourceAsStream("/img/icon.png")));
+            }
+            catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         
         public String getTitle() {

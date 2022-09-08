@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class Font {
-    private final int rows;
-    private final int cols;
     private final int height;
     
     private final char firstChar;
@@ -29,8 +27,7 @@ public class Font {
             var cellWidth = fixed(data.readInt());
             var cellHeight = fixed(data.readInt());
             
-            rows = fontImageHeight / cellHeight;
-            cols = fontImageWidth / cellWidth;
+            int cols = fontImageWidth / cellWidth;
             
             height = cellHeight;
             
@@ -45,11 +42,11 @@ public class Font {
                 characterWidths[i] = data.readUnsignedByte();
             }
             
-            var allValues = new double[fontImageHeight][fontImageWidth];
+            var allValues = new double[fontImageWidth][fontImageHeight];
             
-            for (var value : allValues) {
-                for (var i = 0; i < value.length; i++) {
-                    value[i] = data.readUnsignedByte() / (double) 0xFF;
+            for (var y = 0; y < allValues.length; y++) {
+                for (var x = 0; x < allValues[y].length; x++) {
+                    allValues[x][y] = data.readUnsignedByte() / (double) 0xFF;
                 }
             }
             
@@ -68,7 +65,7 @@ public class Font {
                         var vr = (row * cellHeight) + y;
                         var vc = (col * cellWidth) + x;
                         
-                        values.add(allValues[vr][vc]);
+                        values.add(allValues[vc][vr]);
                     }
                 }
                 
@@ -80,7 +77,7 @@ public class Font {
                 charValues.add(new CharacterInfo(width, values.stream().mapToDouble(Double::doubleValue).toArray()));
             }
             
-            chars = (CharacterInfo[]) charValues.toArray();
+            chars = charValues.toArray(new CharacterInfo[0]);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -101,10 +98,15 @@ public class Font {
     }
     
     public CharacterInfo get(char c) {
-        return chars[((c >= firstChar) ? c : ' ') + firstChar];
+        if (c < firstChar || c > 0xFF) {
+            c = ' ';
+        }
+        
+        return chars[c - firstChar];
     }
     
-    public int widthOfGlyphs(List<Glyph> glyphs, int space){
+    @SuppressWarnings("WhileLoopReplaceableByForEach")
+    public int widthOfGlyphs(List<Glyph> glyphs, int space) {
         var fullWidth = 0;
         
         var iterator = glyphs.iterator();
@@ -120,6 +122,7 @@ public class Font {
         return fullWidth;
     }
     
+    @SuppressWarnings("WhileLoopReplaceableByForEach")
     public int widthOfChars(List<Character> chars, int space) {
         var fullWidth = 0;
         
