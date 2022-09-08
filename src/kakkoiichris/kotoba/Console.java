@@ -2,10 +2,12 @@ package kakkoiichris.kotoba;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Console {
     private final Frame frame;
@@ -32,15 +34,59 @@ public class Console {
         });
     }
     
+    public String getTitle() {
+        return frame.getTitle();
+    }
+    
+    public void setTitle(String title) {
+        frame.setTitle(title);
+    }
+    
+    public Image getIcon() {
+        return frame.getIconImage();
+    }
+    
+    public void setIcon(Image icon) {
+        frame.setIconImage(icon);
+    }
+    
+    public boolean isOpen() {
+        return frame.isVisible();
+    }
+    
+    public Glyph.Effect getEffect() {
+        return buffer.getEffect();
+    }
+    
+    public void setEffect(Glyph.Effect effect) {
+        buffer.setEffect(effect);
+    }
+    
+    public boolean isInverted() {
+        return buffer.isInverted();
+    }
+    
+    public void setInverted(boolean inverted) {
+        buffer.setInverted(inverted);
+    }
+    
+    public boolean isRulesEnabled() {
+        return buffer.isRulesEnabled();
+    }
+    
+    public void setRulesEnabled(boolean rulesEnabled) {
+        buffer.setRulesEnabled(rulesEnabled);
+    }
+    
     public void open() {
         if (!closed) {
             return;
         }
-    
+        
         closed = false;
-    
+        
         frame.setVisible(true);
-    
+        
         buffer.open();
     }
     
@@ -54,6 +100,145 @@ public class Console {
         buffer.close();
         
         frame.dispose();
+    }
+    
+    public void addRules(Glyph.Rule... rules) {
+        buffer.addRules(rules);
+    }
+    
+    public boolean hasRule(String name) {
+        return buffer.hasRule(name);
+    }
+    
+    public void removeRules(String... names) {
+        buffer.removeRules(names);
+    }
+    
+    public void clear() {
+        if (closed) {
+            return;
+        }
+        
+        buffer.clear();
+    }
+    
+    public void pause(double seconds) {
+        if (closed) {
+            return;
+        }
+        
+        try {
+            Thread.sleep((long) (seconds * 1000));
+        }
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public void pause() {
+        if (closed) {
+            return;
+        }
+        
+        buffer.write("Press enter to continue...");
+        
+        KeyEvent event;
+        
+        do {
+            event = buffer.readKey(true);
+        }
+        while (event.getKeyCode() != KeyEvent.VK_ENTER);
+    }
+    
+    public Optional<KeyEvent> readKey(boolean onPress) {
+        if (closed) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(buffer.readKey(onPress));
+    }
+    
+    public Optional<String> readToken() {
+        if (closed) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(buffer.read());
+    }
+    
+    public Optional<String> readText() {
+        if (closed) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(buffer.readText());
+    }
+    
+    public Optional<String> readOption(String... options) {
+        if (closed) {
+            return Optional.empty();
+        }
+        
+        for (var i = 0; i < options.length; i++) {
+            var option = options[i];
+            
+            buffer.write("(%d) %s%n".formatted(i, option));
+        }
+        
+        int choice;
+        
+        while (true) {
+            buffer.write("> ");
+            
+            var input = buffer.readText();
+            
+            try {
+                choice = Integer.parseInt(input) - 1;
+            }
+            catch (NumberFormatException e) {
+                buffer.write("Please enter a number.\n");
+                
+                continue;
+            }
+            
+            if (0 < choice && choice < options.length) {
+                buffer.write("Please enter a valid choice.\n");
+                
+                continue;
+            }
+            
+            break;
+        }
+        
+        return Optional.of(options[choice]);
+    }
+    
+    public void write(Object x) {
+        if (closed) {
+            return;
+        }
+        
+        buffer.write(x.toString());
+    }
+    
+    public void writeFormat(String format, Object... args) {
+        if (closed) {
+            return;
+        }
+        
+        buffer.write(String.format(format, args));
+    }
+    
+    public void writeLine(Object x) {
+        if (closed) {
+            return;
+        }
+        
+        buffer.write("%s%n".formatted(x));
+    }
+    
+    public void writeLine() {
+        writeLine("");
     }
     
     public static class Config {
