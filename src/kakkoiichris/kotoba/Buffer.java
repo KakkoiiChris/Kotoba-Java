@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,9 +75,6 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
     private final Thread thread = new Thread(this);
     
     private boolean running = false;
-    
-    private final int scrollBarMargin = 4;
-    private final Rectangle2D.Double scrollBarBounds = new Rectangle2D.Double();
     
     private int scrollTarget = 0;
     private double scrollOffset = 0.0;
@@ -292,8 +288,6 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
                 
                 var thisEffect = effect;
                 var thisInvert = inverted;
-                
-                var ii = i;
 
 rules:
                 for (var match : matches.entrySet()) {
@@ -301,7 +295,7 @@ rules:
                     var ranges = match.getValue();
                     
                     for (var range : ranges) {
-                        if (!range.contains(ii)) {
+                        if (!range.contains(i)) {
                             continue;
                         }
                         
@@ -830,7 +824,7 @@ rules:
     
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        scroll(e.getWheelRotation());
+        scroll(e.getWheelRotation() * scrollAmount);
     }
     
     private record Range(int start, int end) {

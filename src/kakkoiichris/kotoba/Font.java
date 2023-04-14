@@ -55,7 +55,7 @@ public class Font {
             
             var charValues = new ArrayList<CharacterInfo>();
             
-            for (var c = firstChar; c <= '\u00FF'; c++) {
+            for (var c = firstChar; c <= 255; c++) {
                 var values = new ArrayList<Double>();
                 
                 var width = characterWidths[c];
