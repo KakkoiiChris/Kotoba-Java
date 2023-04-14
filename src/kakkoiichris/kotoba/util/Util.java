@@ -1,4 +1,6 @@
-package kakkoiichris.kotoba;
+package kakkoiichris.kotoba.util;
+
+import java.util.Optional;
 
 public class Util {
     public static int getRed(int rgb) {
@@ -43,5 +45,31 @@ public class Util {
     
     public static double nanos() {
         return System.nanoTime();
+    }
+    
+    public static Optional<Integer> toInt(String s) {
+        int i;
+        
+        try {
+            i = Integer.parseInt(s);
+        }
+        catch (NumberFormatException ignored) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(i);
+    }
+    
+    public static Optional<Double> toDouble(String s) {
+        double d;
+        
+        try {
+            d = Double.parseDouble(s);
+        }
+        catch (NumberFormatException ignored) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(d);
     }
 }

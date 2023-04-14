@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static kakkoiichris.kotoba.Util.nanos;
-import static kakkoiichris.kotoba.Util.seconds;
+import static kakkoiichris.kotoba.util.Util.nanos;
+import static kakkoiichris.kotoba.util.Util.seconds;
 
 public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelListener {
     private final int foreground;
@@ -219,7 +219,7 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
         }
     }
     
-    public String read() {
+    public String readToken() {
         if (inputScanBuffer.isEmpty()) {
             try {
                 inputWaiting = true;
@@ -246,7 +246,7 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
         return token;
     }
     
-    public String readText() {
+    public String readLine() {
         try {
             inputWaiting = true;
             
@@ -312,7 +312,7 @@ rules:
                     }
                 }
                 
-                outputBuffer.add(new Glyph(c, thisEffect.copy(), thisInvert));
+                outputBuffer.add(new Glyph(c, thisInvert, thisEffect.copy()));
             }
         }
         finally {
@@ -642,7 +642,7 @@ rules:
     @Override
     public void keyTyped(KeyEvent e) {
         if (inputWaiting) {
-            inputBuffer.add(new Glyph(e.getKeyChar(), effect.copy(), inverted));
+            inputBuffer.add(new Glyph(e.getKeyChar(), inverted, effect.copy()));
             
             blinkCursor();
         }
@@ -667,7 +667,7 @@ rules:
                     try {
                         var text = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
                         
-                        inputBuffer.addAll(Glyph.toGlyphs(text, effect, inverted));
+                        inputBuffer.addAll(Glyph.toGlyphs(text, inverted, effect));
                         
                         return;
                     }
@@ -706,7 +706,7 @@ rules:
                             input.clear();
                             inputIndex = 0;
                             
-                            inputBuffer.addAll(Glyph.toGlyphs(inputHistory.get(inputHistoryIndex), effect, inverted));
+                            inputBuffer.addAll(Glyph.toGlyphs(inputHistory.get(inputHistoryIndex), inverted, effect));
                             
                             blinkCursor();
                         }
@@ -725,7 +725,7 @@ rules:
                             input.clear();
                             inputIndex = 0;
                             
-                            inputBuffer.addAll(Glyph.toGlyphs(inputHistory.get(inputHistoryIndex), effect, inverted));
+                            inputBuffer.addAll(Glyph.toGlyphs(inputHistory.get(inputHistoryIndex), inverted, effect));
                             
                             blinkCursor();
                         }

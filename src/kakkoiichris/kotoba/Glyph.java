@@ -8,23 +8,23 @@ import static java.lang.Math.sin;
 
 public class Glyph {
     private final char c;
-    private final Effect effect;
     private final boolean inverted;
+    private final Effect effect;
     
     private int color = 0;
     private int offsetX = 0;
     private int offsetY = 0;
     
-    public Glyph(char c, Effect effect, boolean inverted) {
+    public Glyph(char c, boolean inverted, Effect effect) {
         this.c = c;
-        this.effect = effect;
         this.inverted = inverted;
+        this.effect = effect;
     }
     
-    public static List<Glyph> toGlyphs(String string, Effect effect, boolean inverted) {
+    public static List<Glyph> toGlyphs(String string, boolean inverted, Effect effect) {
         return string
             .chars()
-            .mapToObj(c -> new Glyph((char) c, effect, inverted))
+            .mapToObj(c -> new Glyph((char) c, inverted, effect))
             .toList();
     }
     
@@ -32,12 +32,12 @@ public class Glyph {
         return c;
     }
     
-    public Effect getEffect() {
-        return effect;
-    }
-    
     public boolean isInverted() {
         return inverted;
+    }
+    
+    public Effect getEffect() {
+        return effect;
     }
     
     public int getColor() {
@@ -153,7 +153,7 @@ public class Glyph {
             }
         }
         
-        static final class Wave implements Effect {
+        final class Wave implements Effect {
             private final double amplitude;
             private final double frequency;
             private final double speed;

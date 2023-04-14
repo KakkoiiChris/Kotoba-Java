@@ -8,12 +8,16 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Stack;
 
 public class Console {
     private final Frame frame;
     private final Buffer buffer;
     
     private boolean closed = true;
+    
+    private final Stack<String> promptStack = new Stack<>();
+    private String prompt;
     
     public Console(Config config) {
         frame = new Frame(config.title);
@@ -32,6 +36,8 @@ public class Console {
                 close();
             }
         });
+        
+        setPrompt(config.prompt);
     }
     
     public String getTitle() {
@@ -76,6 +82,34 @@ public class Console {
     
     public void setRulesEnabled(boolean rulesEnabled) {
         buffer.setRulesEnabled(rulesEnabled);
+    }
+    
+    public String getPrompt() {
+        return prompt;
+    }
+    
+    public void pushPrompt(String prompt) {
+        promptStack.push(prompt);
+        
+        this.prompt = String.join("", promptStack);
+    }
+    
+    public void popPrompt() {
+        if (!promptStack.isEmpty()) {
+            promptStack.pop();
+        }
+        
+        this.prompt = String.join("", promptStack);
+    }
+    
+    public void setPrompt(String prompt) {
+        if (!promptStack.isEmpty()) {
+            promptStack.pop();
+        }
+        
+        promptStack.push(prompt);
+        
+        this.prompt = String.join("", promptStack);
     }
     
     public void open() {
@@ -163,7 +197,9 @@ public class Console {
             return Optional.empty();
         }
         
-        return Optional.of(buffer.read());
+        buffer.write(prompt);
+        
+        return Optional.of(buffer.readToken());
     }
     
     public Optional<String> readLine() {
@@ -171,7 +207,9 @@ public class Console {
             return Optional.empty();
         }
         
-        return Optional.of(buffer.readText());
+        buffer.write(prompt);
+        
+        return Optional.of(buffer.readLine());
     }
     
     public Optional<String> readOption(String... options) {
@@ -190,7 +228,7 @@ public class Console {
         while (true) {
             buffer.write("> ");
             
-            var input = buffer.readText();
+            var input = buffer.readLine();
             
             try {
                 choice = Integer.parseInt(input) - 1;
@@ -221,12 +259,12 @@ public class Console {
         buffer.write(x.toString());
     }
     
-    public void writeFormat(String format, Object... args) {
+    public void write(String format, Object... args) {
         if (closed) {
             return;
         }
         
-        buffer.write(String.format(format, args));
+        buffer.write(format.formatted(args));
     }
     
     public void writeLine(Object x) {
@@ -237,7 +275,15 @@ public class Console {
         buffer.write("%s%n".formatted(x));
     }
     
-    public void writeLine() {
+    public void writeLine(String format, Object... args) {
+        if (closed) {
+            return;
+        }
+        
+        buffer.write((format + "%n").formatted(args));
+    }
+    
+    public void newLine() {
         writeLine("");
     }
     
@@ -258,6 +304,7 @@ public class Console {
         private int scrollBarWidth = 8;
         private double cursorSpeed = 0.5;
         private String inputDelimiter = " ";
+        private String prompt = "";
         
         public Config() {
             try {
@@ -409,6 +456,15 @@ public class Console {
         
         public Config inputDelimiter(String inputDelimiter) {
             this.inputDelimiter = inputDelimiter;
+            return this;
+        }
+        
+        public String getPrompt() {
+            return prompt;
+        }
+        
+        public Config prompt(String prompt) {
+            this.prompt = prompt;
             return this;
         }
     }

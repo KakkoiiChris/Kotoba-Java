@@ -1,5 +1,7 @@
 package kakkoiichris.kotoba;
 
+import kakkoiichris.kotoba.util.Util;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;
@@ -19,6 +21,14 @@ public class Raster {
         Arrays.fill(pixels, c);
     }
     
+    public int get(int x, int y) {
+        if (0 <= x && x < width && 0 <= y && y < height) {
+            return pixels[x + y * width];
+        }
+        
+        return 0;
+    }
+    
     public void put(int x, int y, int c, double a) {
         if (0 <= x && x < width && 0 <= y && y < height) {
             pixels[x + y * width] = switch ((int) (a * 2)) {
@@ -26,7 +36,7 @@ public class Raster {
                 
                 case 1 -> Util.blend(c, pixels[x + y * width], a);
                 
-                case 2, default -> c;
+                default -> c;
             };
         }
     }
