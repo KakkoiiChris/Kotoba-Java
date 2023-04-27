@@ -10,7 +10,7 @@ import java.util.Objects;
 public class CSV {
     private final String filePath;
     
-    private List<Row> rows = new ArrayList<>();
+    private final List<Row> rows = new ArrayList<>();
     
     private boolean isResource = false;
     
