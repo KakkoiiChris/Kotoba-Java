@@ -1,7 +1,5 @@
 package kakkoiichris.kotoba;
 
-import kakkoiichris.kotoba.util.Util;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;

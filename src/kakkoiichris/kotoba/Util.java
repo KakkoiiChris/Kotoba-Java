@@ -1,4 +1,4 @@
-package kakkoiichris.kotoba.util;
+package kakkoiichris.kotoba;
 
 import java.util.Optional;
 

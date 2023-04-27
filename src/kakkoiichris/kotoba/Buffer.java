@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static kakkoiichris.kotoba.util.Util.nanos;
-import static kakkoiichris.kotoba.util.Util.seconds;
+import static kakkoiichris.kotoba.Util.nanos;
+import static kakkoiichris.kotoba.Util.seconds;
 
 public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelListener {
     private final int foreground;
