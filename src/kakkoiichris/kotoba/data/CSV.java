@@ -18,51 +18,64 @@ public class CSV {
         this.filePath = filePath;
     }
     
-    public void readResource() {
-        rows.clear();
-        
-        var lines = new BufferedReader(
-            new InputStreamReader(
-                Objects.requireNonNull(
-                    getClass().getResourceAsStream(filePath))))
-            .lines()
-            .toList();
-        
-        rows.addAll(lines.stream().map(Row::parse).toList());
-        
-        isResource = true;
-    }
-    
-    public void read() throws FileNotFoundException {
-        if (!isResource) {
+    public boolean readResource() {
+        try (var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(filePath))))) {
             rows.clear();
             
-            var lines = new BufferedReader(
-                new InputStreamReader(
-                    new FileInputStream(filePath)))
-                .lines()
-                .toList();
+            var lines = reader.lines().toList();
             
             rows.addAll(lines.stream().map(Row::parse).toList());
+            
+            isResource = true;
         }
+        catch (IOException e) {
+            e.printStackTrace();
+            
+            return false;
+        }
+        
+        return true;
     }
     
-    public void write() throws IOException {
+    public boolean read() {
         if (!isResource) {
-            var writer = new BufferedWriter(
-                new OutputStreamWriter(
-                    new FileOutputStream(filePath),
-                    StandardCharsets.UTF_8
-                )
-            );
-            
-            for (var row : rows) {
-                writer.write(row.toString());
-                writer.newLine();
+            try (var reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath)))) {
+                rows.clear();
+                
+                var lines = reader.lines().toList();
+                
+                rows.addAll(lines.stream().map(Row::parse).toList());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                
+                return false;
             }
             
-            writer.close();
+            return true;
         }
+        
+        return false;
+    }
+    
+    public boolean write() {
+        if (!isResource) {
+            try (var writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
+                for (var row : rows) {
+                    writer.write(row.toString());
+                    writer.newLine();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                
+                return false;
+            }
+            
+            return true;
+        }
+        
+        return false;
     }
     
     public Row get(int index) {
