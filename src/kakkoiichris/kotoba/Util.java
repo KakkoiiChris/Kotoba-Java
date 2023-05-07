@@ -48,42 +48,30 @@ public class Util {
     }
     
     public static Optional<Integer> toInt(String s) {
-        int i;
-        
         try {
-            i = Integer.parseInt(s);
+            return Optional.of(Integer.parseInt(s));
         }
         catch (NumberFormatException ignored) {
             return Optional.empty();
         }
-        
-        return Optional.of(i);
     }
     
     public static Optional<Integer> toInt(String s, int radix) {
-        int i;
-        
         try {
-            i = Integer.parseInt(s, radix);
+            return Optional.of(Integer.parseInt(s, radix));
         }
         catch (NumberFormatException ignored) {
             return Optional.empty();
         }
-        
-        return Optional.of(i);
     }
     
     public static Optional<Double> toDouble(String s) {
-        double d;
-        
         try {
-            d = Double.parseDouble(s);
+            return Optional.of(Double.parseDouble(s));
         }
         catch (NumberFormatException ignored) {
             return Optional.empty();
         }
-        
-        return Optional.of(d);
     }
     
     public static Optional<Boolean> toBoolean(String s) {

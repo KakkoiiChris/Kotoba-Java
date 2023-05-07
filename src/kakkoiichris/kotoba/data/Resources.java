@@ -103,7 +103,9 @@ public class Resources {
                         
                         //case "json" -> jsonFiles.put(resourceName, new JSON(resourcePath) {{readResource();}});
                         
-                        //case "kq" -> kqFiles.put(resourceName, new QuickScript(new TXT(resourcePath){{readResource();}}.getLines());
+                        case "kq" -> kqFiles.put(resourceName, new QuickScript(new TXT(resourcePath) {{
+                            readResource();
+                        }}.getLines()));
                         
                         case "txt" -> txtFiles.put(resourceName, new TXT(resourcePath) {{
                             readResource();
