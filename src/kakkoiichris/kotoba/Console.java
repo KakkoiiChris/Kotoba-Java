@@ -68,6 +68,10 @@ public class Console {
         buffer.setEffect(effect);
     }
     
+    public void setColor(int rgb) {
+        buffer.setEffect(new Glyph.Effect.Color(rgb));
+    }
+    
     public boolean isInverted() {
         return buffer.isInverted();
     }
@@ -136,6 +140,10 @@ public class Console {
         frame.dispose();
     }
     
+    public Optional<Glyph.Rule> getRule(String name) {
+        return buffer.getRule(name);
+    }
+    
     public void addRules(Glyph.Rule... rules) {
         buffer.addRules(rules);
     }
@@ -146,6 +154,10 @@ public class Console {
     
     public void removeRules(String... names) {
         buffer.removeRules(names);
+    }
+    
+    public void clearRules() {
+        buffer.clearRules();
     }
     
     public void clear() {

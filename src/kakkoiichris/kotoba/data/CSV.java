@@ -131,7 +131,7 @@ public class CSV {
         }
         
         public List<String> getDataWithoutHeader() {
-            return data.subList(1, data.size() - 1);
+            return data.subList(1, data.size());
         }
         
         @Override

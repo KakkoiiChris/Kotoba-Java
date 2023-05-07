@@ -6,10 +6,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -170,6 +168,10 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
         running = false;
     }
     
+    public Optional<Glyph.Rule> getRule(String name) {
+        return Optional.ofNullable(rules.get(name));
+    }
+    
     public void addRules(Glyph.Rule... rules) {
         for (var rule : rules) {
             this.rules.put(rule.name(), rule);
@@ -184,6 +186,10 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
         for (var name : names) {
             rules.remove(name);
         }
+    }
+    
+    public void clearRules() {
+        rules.clear();
     }
     
     public void clear() {

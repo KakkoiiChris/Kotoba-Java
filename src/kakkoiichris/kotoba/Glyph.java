@@ -65,6 +65,27 @@ public class Glyph {
         
         Effect copy();
         
+        class None implements Effect {
+            private static None instance;
+            
+            public static None get() {
+                if (instance == null) {
+                    instance = new None();
+                }
+                
+                return instance;
+            }
+            
+            @Override
+            public void apply(Glyph glyph, double delta) {
+            }
+            
+            @Override
+            public Effect copy() {
+                return this;
+            }
+        }
+        
         record Color(int rgb) implements Effect {
             public static final Color red = new Color(0xF75DB3);
             public static final Color orange = new Color(0xF9642D);
@@ -217,6 +238,21 @@ public class Glyph {
         }
     }
     
-    record Rule(String name, Pattern regex, Effect effect, boolean invert) {
+    record Rule(String name, Pattern regex, boolean invert, Effect effect) {
+        public Rule withName(String name) {
+            return new Rule(name, regex, invert, effect);
+        }
+        
+        public Rule withRegex(Pattern regex) {
+            return new Rule(name, regex, invert, effect);
+        }
+        
+        public Rule withInvert(boolean invert) {
+            return new Rule(name, regex, invert, effect);
+        }
+        
+        public Rule withEffect(Effect effect) {
+            return new Rule(name, regex, invert, effect);
+        }
     }
 }
