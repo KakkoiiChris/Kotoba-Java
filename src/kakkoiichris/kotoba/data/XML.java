@@ -40,7 +40,7 @@ public class XML {
         try {
             var builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             
-            document = builder.parse(new FileInputStream(new File(filePath)));
+            document = builder.parse(new FileInputStream(filePath));
             
             document.normalize();
         }

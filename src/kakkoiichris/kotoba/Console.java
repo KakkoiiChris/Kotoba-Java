@@ -39,6 +39,10 @@ public class Console {
         
         setPrompt(config.prompt);
     }
+
+    public Console() {
+        this(new Config());
+    }
     
     public String getTitle() {
         return frame.getTitle();

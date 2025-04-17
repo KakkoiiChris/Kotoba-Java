@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static kakkoiichris.kotoba.Util.nanos;
-import static kakkoiichris.kotoba.Util.seconds;
 
 public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelListener {
     private final int foreground;
@@ -59,7 +57,7 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
     private boolean keyOnPress = false;
     
     // Cursor
-    private double cursorBlinkTimer = seconds();
+    private double cursorBlinkTimer = 0;
     private boolean cursorVisible = false;
     
     // Formatting
@@ -78,18 +76,18 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
     private double scrollOffset = 0.0;
     
     public Buffer(Console.Config config) {
-        this.foreground = config.getForeground();
-        this.background = config.getBackground();
-        this.font = config.getFont();
-        this.xSpace = config.getXSpace();
-        this.ySpace = config.getYSpace();
-        this.tabSize = config.getTabSize();
-        this.frameRate = config.getFrameRate();
-        this.scrollSpeed = config.getScrollSpeed();
-        this.scrollAmount = config.getScrollAmount();
-        this.scrollBarWidth = config.getScrollBarWidth();
-        this.cursorSpeed = config.getCursorSpeed();
-        this.inputDelimiter = config.getInputDelimiter();
+        foreground = config.getForeground();
+        background = config.getBackground();
+        font = config.getFont();
+        xSpace = config.getXSpace();
+        ySpace = config.getYSpace();
+        tabSize = config.getTabSize();
+        frameRate = config.getFrameRate();
+        scrollSpeed = config.getScrollSpeed();
+        scrollAmount = config.getScrollAmount();
+        scrollBarWidth = config.getScrollBarWidth();
+        cursorSpeed = config.getCursorSpeed();
+        inputDelimiter = config.getInputDelimiter();
         
         effect = new Glyph.Effect.Color(foreground);
         
@@ -268,24 +266,8 @@ public class Buffer extends Canvas implements Runnable, KeyListener, MouseWheelL
     }
     
     public void write(String string) {
-        var matches = new HashMap<Glyph.Rule, List<Range>>();
-        
-        if (rulesEnabled) {
-            for (var rule : rules.values()) {
-                var ranges = new ArrayList<Range>();
-                
-                matches.put(rule, ranges);
-                
-                var matcher = rule.regex().matcher(string);
-                
-                while (matcher.find()) {
-                    var group = matcher.toMatchResult();
-                    
-                    ranges.add(new Range(group.start(), group.end())); // TODO POSSIBLE -1
-                }
-            }
-        }
-        
+        var matches = getMatches(string);
+
         try {
             outputLock.lock();
             
@@ -319,7 +301,29 @@ rules:
             outputLock.unlock();
         }
     }
-    
+
+    private HashMap<Glyph.Rule, List<Range>> getMatches(String string) {
+        var matches = new HashMap<Glyph.Rule, List<Range>>();
+
+        if (rulesEnabled) {
+            for (var rule : rules.values()) {
+                var ranges = new ArrayList<Range>();
+
+                matches.put(rule, ranges);
+
+                var matcher = rule.regex().matcher(string);
+
+                while (matcher.find()) {
+                    var group = matcher.toMatchResult();
+
+                    ranges.add(new Range(group.start(), group.end()));
+                }
+            }
+        }
+
+        return matches;
+    }
+
     @Override
     public void run() {
         var npu = 1E9 / frameRate;
@@ -327,7 +331,7 @@ rules:
         var delta = 0.0;
         var timer = 0.0;
         
-        var then = nanos();
+        var then = System.nanoTime();
         
         var updates = 0;
         var frames = 0;
@@ -335,7 +339,7 @@ rules:
         running = true;
         
         while (running) {
-            var now = nanos();
+            var now = System.nanoTime();
             var elapsed = (now - then) / npu;
             then = now;
             
@@ -377,11 +381,13 @@ rules:
         if (inputWaiting) {
             input.forEach(glyph -> glyph.update(delta));
         }
+
+        cursorBlinkTimer += delta / frameRate;
         
-        if (seconds() - cursorBlinkTimer >= cursorSpeed) {
+        if (cursorBlinkTimer >= cursorSpeed) {
             cursorVisible = isWaiting() && !cursorVisible;
             
-            cursorBlinkTimer += cursorSpeed;
+            cursorBlinkTimer -= cursorSpeed;
         }
         
         scrollOffset += (scrollTarget - scrollOffset) * scrollSpeed;
@@ -610,7 +616,7 @@ rules:
     }
     
     private void blinkCursor() {
-        cursorBlinkTimer = seconds();
+        cursorBlinkTimer = 0;
         
         cursorVisible = true;
     }

@@ -36,10 +36,6 @@ public class Glyph {
         return inverted;
     }
     
-    public Effect getEffect() {
-        return effect;
-    }
-    
     public int getColor() {
         return color;
     }
@@ -238,7 +234,7 @@ public class Glyph {
         }
     }
     
-    record Rule(String name, Pattern regex, boolean invert, Effect effect) {
+    public record Rule(String name, Pattern regex, boolean invert, Effect effect) {
         public Rule withName(String name) {
             return new Rule(name, regex, invert, effect);
         }

@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;
 
+import static kakkoiichris.kotoba.util.ColorMath.*;
+
 public class Raster {
     private final int[] pixels;
     private final int width;
@@ -32,7 +34,7 @@ public class Raster {
             pixels[x + y * width] = switch ((int) (a * 2)) {
                 case 0 -> pixels[x + y * width];
                 
-                case 1 -> Util.blend(c, pixels[x + y * width], a);
+                case 1 -> blend(c, pixels[x + y * width], a);
                 
                 default -> c;
             };
@@ -50,7 +52,7 @@ public class Raster {
                 
                 if (xx < 0 || xx >= width) continue;
                 
-                pixels[xx + yy * width] = Util.getInverse(pixels[xx + yy * width]);
+                pixels[xx + yy * width] = getInverse(pixels[xx + yy * width]);
             }
         }
     }

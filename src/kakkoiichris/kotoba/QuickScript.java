@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static kakkoiichris.kotoba.util.Convert.*;
+
 public class QuickScript {
     private final List<String> source;
     
@@ -32,13 +34,13 @@ public class QuickScript {
                     case "color" -> {
                         switch (args.size()) {
                             case 1 -> {
-                                var rgb = Util.toInt(args.get(0), 16).orElseThrow(() -> new RuntimeException("COLOR 1 FAIL"));
+                                var rgb = toInt(args.get(0), 16).orElseThrow(() -> new RuntimeException("COLOR 1 FAIL"));
                                 
                                 console.setColor(rgb);
                             }
                             
                             case 3 -> {
-                                var rgb = args.stream().map(s -> Util.toInt(s).orElseThrow(() -> new RuntimeException("COLOR 3 FAIL"))).toList();
+                                var rgb = args.stream().map(s -> toInt(s).orElseThrow(() -> new RuntimeException("COLOR 3 FAIL"))).toList();
                                 
                                 var r = rgb.get(0);
                                 var g = rgb.get(1);
@@ -67,19 +69,19 @@ public class QuickScript {
                     }
                     
                     case "invert" -> {
-                        var b = Util.toBoolean(args.get(0)).orElseThrow(() -> new RuntimeException("INVERT FAIL"));
+                        var b = toBoolean(args.get(0)).orElseThrow(() -> new RuntimeException("INVERT FAIL"));
                         
                         console.setInverted(b);
                     }
                     
-                    case "newline" -> newline = Util.toBoolean(args.get(0)).orElseThrow(() -> new RuntimeException("NEWLINE FAIL"));
+                    case "newline" -> newline = toBoolean(args.get(0)).orElseThrow(() -> new RuntimeException("NEWLINE FAIL"));
                     
                     case "pause" -> {
                         switch (args.size()) {
                             case 0 -> console.pause();
                             
                             case 1 -> {
-                                var b = Util.toDouble(args.get(0)).orElseThrow(() -> new RuntimeException("PAUSE 1 FAIL"));
+                                var b = toDouble(args.get(0)).orElseThrow(() -> new RuntimeException("PAUSE 1 FAIL"));
                                 
                                 console.pause(b);
                             }
@@ -89,7 +91,7 @@ public class QuickScript {
                     case "rule" -> {
                         var name = args.get(0);
                         var regex = Pattern.compile(args.get(1));
-                        var invert = Util.toBoolean(args.get(2)).orElseThrow(() -> new RuntimeException("RULE INVERT FAIL"));
+                        var invert = toBoolean(args.get(2)).orElseThrow(() -> new RuntimeException("RULE INVERT FAIL"));
                         
                         var rule = new Glyph.Rule(
                             name,
@@ -103,7 +105,7 @@ public class QuickScript {
                     
                     case "rule_color" -> {
                         var name = args.get(0);
-                        var rgb = Util.toInt(args.get(1), 16).orElseThrow(() -> new RuntimeException("RULE_COLOR COLOR FAIL"));
+                        var rgb = toInt(args.get(1), 16).orElseThrow(() -> new RuntimeException("RULE_COLOR COLOR FAIL"));
                         
                         var rule = console.getRule(name).orElseThrow(() -> new RuntimeException("RULE_COLOR NO RULE"));
                         
@@ -114,7 +116,7 @@ public class QuickScript {
                     
                     case "rule_and_color" -> {
                         var name = args.get(0);
-                        var rgb = Util.toInt(args.get(1), 16).orElseThrow(() -> new RuntimeException("RULE_AND_COLOR COLOR FAIL"));
+                        var rgb = toInt(args.get(1), 16).orElseThrow(() -> new RuntimeException("RULE_AND_COLOR COLOR FAIL"));
                         
                         var rule = console.getRule(name).orElseThrow(() -> new RuntimeException("RULE_AND_COLOR NO RULE"));
                         
@@ -125,12 +127,12 @@ public class QuickScript {
                     
                     case "rule_cycle" -> {
                         var name = args.get(0);
-                        var speed = Util.toDouble(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_CYCLE SPEED FAIL"));
+                        var speed = toDouble(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_CYCLE SPEED FAIL"));
                         
                         var colors = args
                             .stream()
                             .skip(2)
-                            .mapToInt(color -> Util.toInt(color, 16).orElseThrow(() -> new RuntimeException("RULE_CYCLE COLORS NOT HEX")))
+                            .mapToInt(color -> toInt(color, 16).orElseThrow(() -> new RuntimeException("RULE_CYCLE COLORS NOT HEX")))
                             .toArray();
                         
                         var rule = console.getRule(name).orElseThrow(() -> new RuntimeException("RULE_CYCLE NO RULE"));
@@ -142,12 +144,12 @@ public class QuickScript {
                     
                     case "rule_and_cycle" -> {
                         var name = args.get(0);
-                        var speed = Util.toDouble(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_AND_CYCLE SPEED FAIL"));
+                        var speed = toDouble(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_AND_CYCLE SPEED FAIL"));
                         
                         var colors = args
                             .stream()
                             .skip(2)
-                            .mapToInt(color -> Util.toInt(color, 16).orElseThrow(() -> new RuntimeException("RULE_AND_CYCLE COLORS NOT HEX")))
+                            .mapToInt(color -> toInt(color, 16).orElseThrow(() -> new RuntimeException("RULE_AND_CYCLE COLORS NOT HEX")))
                             .toArray();
                         
                         var rule = console.getRule(name).orElseThrow(() -> new RuntimeException("RULE_AND_CYCLE NO RULE"));
@@ -179,8 +181,8 @@ public class QuickScript {
                     
                     case "rule_jitter" -> {
                         var name = args.get(0);
-                        var x = Util.toInt(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_JITTER X FAIL"));
-                        var y = Util.toInt(args.get(2)).orElseThrow(() -> new RuntimeException("RULE_JITTER Y FAIL"));
+                        var x = toInt(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_JITTER X FAIL"));
+                        var y = toInt(args.get(2)).orElseThrow(() -> new RuntimeException("RULE_JITTER Y FAIL"));
                         
                         var rule = console.getRule(name).orElseThrow(() -> new RuntimeException("RULE_JITTER NO RULE"));
                         
@@ -191,8 +193,8 @@ public class QuickScript {
                     
                     case "rule_and_jitter" -> {
                         var name = args.get(0);
-                        var x = Util.toInt(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_AND_JITTER X FAIL"));
-                        var y = Util.toInt(args.get(2)).orElseThrow(() -> new RuntimeException("RULE_AND_JITTER Y FAIL"));
+                        var x = toInt(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_AND_JITTER X FAIL"));
+                        var y = toInt(args.get(2)).orElseThrow(() -> new RuntimeException("RULE_AND_JITTER Y FAIL"));
                         
                         var rule = console.getRule(name).orElseThrow(() -> new RuntimeException("RULE_AND_JITTER NO RULE"));
                         
@@ -203,10 +205,10 @@ public class QuickScript {
                     
                     case "rule_wave" -> {
                         var name = args.get(0);
-                        var amplitude = Util.toDouble(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_WAVE AMPLITUDE FAIL"));
-                        var frequency = Util.toDouble(args.get(2)).orElseThrow(() -> new RuntimeException("RULE_WAVE FREQUENCY FAIL"));
-                        var speed = Util.toDouble(args.get(3)).orElseThrow(() -> new RuntimeException("RULE_WAVE SPEED FAIL"));
-                        var vertical = Util.toBoolean(args.get(4)).orElseThrow(() -> new RuntimeException("RULE_WAVE VERTICAL FAIL"));
+                        var amplitude = toDouble(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_WAVE AMPLITUDE FAIL"));
+                        var frequency = toDouble(args.get(2)).orElseThrow(() -> new RuntimeException("RULE_WAVE FREQUENCY FAIL"));
+                        var speed = toDouble(args.get(3)).orElseThrow(() -> new RuntimeException("RULE_WAVE SPEED FAIL"));
+                        var vertical = toBoolean(args.get(4)).orElseThrow(() -> new RuntimeException("RULE_WAVE VERTICAL FAIL"));
                         
                         var rule = console.getRule(name).orElseThrow(() -> new RuntimeException("RULE_WAVE NO RULE"));
                         
@@ -217,10 +219,10 @@ public class QuickScript {
                     
                     case "rule_and_wave" -> {
                         var name = args.get(0);
-                        var amplitude = Util.toDouble(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE AMPLITUDE FAIL"));
-                        var frequency = Util.toDouble(args.get(2)).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE FREQUENCY FAIL"));
-                        var speed = Util.toDouble(args.get(3)).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE SPEED FAIL"));
-                        var vertical = Util.toBoolean(args.get(4)).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE VERTICAL FAIL"));
+                        var amplitude = toDouble(args.get(1)).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE AMPLITUDE FAIL"));
+                        var frequency = toDouble(args.get(2)).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE FREQUENCY FAIL"));
+                        var speed = toDouble(args.get(3)).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE SPEED FAIL"));
+                        var vertical = toBoolean(args.get(4)).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE VERTICAL FAIL"));
                         
                         var rule = console.getRule(name).orElseThrow(() -> new RuntimeException("RULE_AND_WAVE NO RULE"));
                         
@@ -232,7 +234,7 @@ public class QuickScript {
                     case "rule_remove" -> console.removeRules(args.get(0));
                     
                     case "rules" -> {
-                        var enabled = Util.toBoolean(args.get(0)).orElseThrow(() -> new RuntimeException("RULES FAIL"));
+                        var enabled = toBoolean(args.get(0)).orElseThrow(() -> new RuntimeException("RULES FAIL"));
                         
                         console.setRulesEnabled(enabled);
                     }

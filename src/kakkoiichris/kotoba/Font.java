@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Font {
@@ -21,11 +20,11 @@ public class Font {
         try {
             data.readShort();
             
-            var fontImageWidth = fixed(data.readInt());
-            var fontImageHeight = fixed(data.readInt());
+            var fontImageWidth = reverseEndianness(data.readInt());
+            var fontImageHeight = reverseEndianness(data.readInt());
             
-            var cellWidth = fixed(data.readInt());
-            var cellHeight = fixed(data.readInt());
+            var cellWidth = reverseEndianness(data.readInt());
+            var cellHeight = reverseEndianness(data.readInt());
             
             int cols = fontImageWidth / cellWidth;
             
@@ -84,7 +83,7 @@ public class Font {
         }
     }
     
-    private static int fixed(int color) {
+    private static int reverseEndianness(int color) {
         var byte0 = (color >> 24) & 0xFF;
         var byte1 = (color >> 16) & 0xFF;
         var byte2 = (color >> 8) & 0xFF;
@@ -103,40 +102,6 @@ public class Font {
         }
         
         return chars[c - firstChar];
-    }
-    
-    @SuppressWarnings("WhileLoopReplaceableByForEach")
-    public int widthOfGlyphs(List<Glyph> glyphs, int space) {
-        var fullWidth = 0;
-        
-        var iterator = glyphs.iterator();
-        
-        while (iterator.hasNext()) {
-            var c = iterator.next().getChar();
-            
-            var width = get(c).width;
-            
-            fullWidth += width + space;
-        }
-        
-        return fullWidth;
-    }
-    
-    @SuppressWarnings("WhileLoopReplaceableByForEach")
-    public int widthOfChars(List<Character> chars, int space) {
-        var fullWidth = 0;
-        
-        var iterator = chars.iterator();
-        
-        while (iterator.hasNext()) {
-            var c = iterator.next();
-            
-            var width = get(c).width;
-            
-            fullWidth += width + space;
-        }
-        
-        return fullWidth;
     }
     
     public record CharacterInfo(int width, double[] values) {
